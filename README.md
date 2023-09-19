@@ -63,6 +63,6 @@ Asegúrate de tener instalados los siguientes requisitos previos:
 
 ## Colaboradores
 
-- [David Valencia](https://github.com/SanRocks1220)
+- [Santiago Andres Rocha ](https://github.com/SanRocks1220)
 - [Julia Mejia](https://github.com/juliamejia) 
 - [ChatGPT](https://chat.openai.com)
