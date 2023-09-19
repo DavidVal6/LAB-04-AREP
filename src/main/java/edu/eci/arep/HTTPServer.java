@@ -41,69 +41,93 @@ public class HTTPServer {
 
     public void start(String[] args) throws IOException, ClassNotFoundException, InvocationTargetException, IllegalAccessException {
         inversionOfControl();
-        // Crea un socket de servidor en el puerto 35000
-        ServerSocket serverSocket = null;
+        ServerSocket serverSocket = createServerSocket();
+    
+        boolean running = true;
+        while (running) {
+            Socket clientSocket = acceptClientConnection(serverSocket);
+            processClientRequest(clientSocket);
+        }
+    
+        serverSocket.close();
+    }
+    
+    private ServerSocket createServerSocket() {
         try {
-            serverSocket = new ServerSocket(35000);
+            return new ServerSocket(35000);
         } catch (IOException e) {
             System.err.println("Could not listen on port: 35000.");
             System.exit(1);
+            return null; // Este retorno nunca se alcanza, pero evita un error de compilación.
         }
-
-        boolean running = true;
-        while (running) {
-            Socket clientSocket = null;
-            try {
-                // Espera y acepta una conexión entrante del cliente
-                System.out.println("Listo para recibir ...");
-                clientSocket = serverSocket.accept();
-            } catch (IOException e) {
-                System.err.println("Accept failed.");
-                System.exit(1);
-            }
-            // Establece flujos de entrada y salida para comunicarse con el cliente
-            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            String inputLine, outputLine = null;
-            String uriString = "";
-            boolean firstLine = true;
-            String request = "/simple";
-            String verb = "";
-            outputStream = clientSocket.getOutputStream();
-            // Lee las líneas de entrada de la solicitud HTTP
-            while ((inputLine = in.readLine()) != null) {
-                System.out.println("Received: " + inputLine);
-                if (firstLine) {
-                    String[] requestTokens = inputLine.split(" ");
-                    if (requestTokens.length >= 2) {
-                        request = requestTokens[1];
-                        verb = requestTokens[0];
-                    }
-                    firstLine = false;
-                }
-                if (inputLine.contains("title?name")) {
-                    String[] firstSplit = inputLine.split("=");
-                    uriString = firstSplit[1].split("HTTP")[0];
-                }
-                if (!in.ready()) {
-                    break;
-                }
-            }
-            if (Objects.equals(verb, "GET")) {
-                System.out.println(request);
-                if(services.containsKey(request)){
-                    outputLine = services.get(request).invoke(null).toString();
-                }
-            }
-            else {
-                outputLine = getHomeIndex();
-            }
-            out.println(outputLine);
-            out.close();
-            in.close();
+    }
+    
+    private Socket acceptClientConnection(ServerSocket serverSocket) {
+        try {
+            System.out.println("Listo para recibir ...");
+            return serverSocket.accept();
+        } catch (IOException e) {
+            System.err.println("Accept failed.");
+            System.exit(1);
+            return null; // Este retorno nunca se alcanza, pero evita un error de compilación.
+        }
+    }
+    
+    private void processClientRequest(Socket clientSocket) throws IOException, InvocationTargetException, IllegalAccessException {
+        try (PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
+    
+            String request = readClientRequest(in);
+            String response = handleClientRequest(request);
+            sendServerResponse(out, response);
+    
+        } finally {
             clientSocket.close();
         }
-        serverSocket.close();
+    }
+    
+    private String readClientRequest(BufferedReader in) throws IOException {
+        String inputLine, request = "/simple";
+        String verb = "";
+        boolean firstLine = true;
+    
+        while ((inputLine = in.readLine()) != null) {
+            System.out.println("Received: " + inputLine);
+            if (firstLine) {
+                String[] requestTokens = inputLine.split(" ");
+                if (requestTokens.length >= 2) {
+                    request = requestTokens[1];
+                    verb = requestTokens[0];
+                }
+                firstLine = false;
+            }
+            if (inputLine.contains("title?name")) {
+                String[] firstSplit = inputLine.split("=");
+                // uriString = firstSplit[1].split("HTTP")[0]; // No se usa uriString en este código
+            }
+            if (!in.ready()) {
+                break;
+            }
+        }
+    
+        return verb + " " + request;
+    }
+    
+    private String handleClientRequest(String request) throws InvocationTargetException, IllegalAccessException {
+        String[] requestParts = request.split(" ");
+        String verb = requestParts[0];
+        String path = requestParts[1];
+    
+        if ("GET".equals(verb) && services.containsKey(path)) {
+            return services.get(path).invoke(null).toString();
+        } else {
+            return getHomeIndex();
+        }
+    }
+    
+    private void sendServerResponse(PrintWriter out, String response) {
+        out.println(response);
+        out.close();
     }
 
 
