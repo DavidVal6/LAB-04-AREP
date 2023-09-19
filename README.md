@@ -54,3 +54,6 @@ Asegúrate de tener instalados los siguientes requisitos previos:
 ¡Listo! Ahora deberías poder instalar, compilar y ejecutar el proyecto desde GitHub, así como realizar pruebas en él.
 
 ### Pruebas de ejecucion:
+![host](https://github.com/DavidVal6/LAB-04-AREP/assets/98176834/2a0ad556-d632-4661-b8c9-de3c5cbb557b)
+![image](https://github.com/DavidVal6/LAB-04-AREP/assets/98176834/336effca-b295-404b-bd2e-e754640af5ad)
+
