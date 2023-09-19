@@ -57,3 +57,12 @@ Asegúrate de tener instalados los siguientes requisitos previos:
 ![host](https://github.com/DavidVal6/LAB-04-AREP/assets/98176834/2a0ad556-d632-4661-b8c9-de3c5cbb557b)
 ![image](https://github.com/DavidVal6/LAB-04-AREP/assets/98176834/336effca-b295-404b-bd2e-e754640af5ad)
 
+## Autor
+
+- [David Eduardo Valencia](https://github.com/DavidVal6)
+
+## Colaboradores
+
+- [David Valencia](https://github.com/SanRocks1220)
+- [Julia Mejia](https://github.com/juliamejia) 
+- [ChatGPT](https://chat.openai.com)
