@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>File Upload</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background-color: #f0f0ff;
+            font-family: "Ubuntu", sans-serif;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        label, input[type="file"], input[type="button"] {
+            display: block;
+            margin: 0 auto;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>UPLOAD A FILE</h1>
+    <form action="/upload" method="POST" enctype="multipart/form-data">
+        <label for="file">Choose a file:</label><br>
+        <input type="file" id="file" name="file"><br><br>
+        <input type="button" value="Upload (POST)" onclick="uploadFile('POST')">
+    </form>
+
+    <br><br>
+
+    <form action="/uploadGet" method="GET">
+    <label for="fileGet">Choose a file for GET request:</label><br>
+    <input type="file" id="fileGet" name="file"><br><br>
+    <input type="button" value="Upload (GET)" onclick="uploadFile('GET')">
+</form>
+
+    <div id="uploadMsg"></div>
+
+    <script>
+        function uploadFile(method) {
+            const fileInput = method === 'POST' ? document.getElementById("file") : document.getElementById("fileGet");
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append("file", file);
+
+            const xhr = new XMLHttpRequest();
+            xhr.onload = function () {
+                document.getElementById("uploadMsg").innerHTML = this.responseText;
+            };
+            xhr.open(method, "/upload");
+            xhr.send(formData);
+        }
+    </script>
+</body>
+</html>
